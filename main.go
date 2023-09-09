@@ -38,6 +38,7 @@ const (
 type Snake struct {
 	body   []Vec2
 	facing Direction
+	head   Vec2
 }
 
 type Game struct {
@@ -53,6 +54,7 @@ func (game Game) render() {
 		game.grid.buffer[body_cell.y][body_cell.x] = SNAKE
 	}
 	game.grid.buffer[game.apple.y][game.apple.x] = APPLE
+	game.grid.buffer[game.snake.head.y][game.snake.head.x] = HEAD
 	game.grid.render()
 }
 
@@ -80,6 +82,7 @@ func (game *Game) update() {
 		game.apple.y = rand.Intn(SIZE)
 	}
 	game.snake.body = append(game.snake.body, new_head)
+	game.snake.head = new_head
 }
 
 const (
