@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 type Vec2 struct {
 	x int
@@ -23,27 +26,60 @@ type Grid struct {
 	buffer [SIZE][SIZE]Pixel
 }
 
+type Direction int
+
+const (
+	LEFT = iota
+	DOWN
+	UP
+	RIGHT
+)
+
+type Snake struct {
+	body   []Vec2
+	facing Direction
+}
+
 type Game struct {
 	score int
 	grid  Grid
-}
-
-func main() {
-	var game = Game{
-		score: 0,
-		grid: Grid{
-			size: Vec2{
-				x: SIZE,
-				y: SIZE,
-			},
-			buffer: [SIZE][SIZE]Pixel{},
-		},
-	}
-	game.render()
+	apple Vec2
+	snake Snake
 }
 
 func (game Game) render() {
+	for i := 0; i < len(game.snake.body); i++ {
+		var body_cell = game.snake.body[i]
+		game.grid.buffer[body_cell.y][body_cell.x] = SNAKE
+	}
+	game.grid.buffer[game.apple.y][game.apple.x] = APPLE
 	game.grid.render()
+}
+
+func (game *Game) update() {
+	var head = game.snake.body[len(game.snake.body)-1]
+	var new_head Vec2 = head
+	switch game.snake.facing {
+	case LEFT:
+		new_head.x -= 1
+		break
+	case RIGHT:
+		new_head.x += 1
+		break
+	case UP:
+		new_head.y -= 1
+		break
+	case DOWN:
+		new_head.y += 1
+		break
+	}
+	if head != game.apple {
+		game.snake.body = game.snake.body[1:]
+	} else {
+		game.apple.x = rand.Intn(SIZE)
+		game.apple.y = rand.Intn(SIZE)
+	}
+	game.snake.body = append(game.snake.body, new_head)
 }
 
 const (
@@ -73,7 +109,7 @@ func (grid Grid) render() {
 				fmt.Print(" ")
 			} else {
 				var x = (j - 1) / 2
-				var y int = i - 1
+				var y = i - 1
 				switch grid.buffer[y][x] {
 				case EMPTY:
 					fmt.Print(" ")
@@ -98,5 +134,38 @@ func (grid Grid) render() {
 			fmt.Print(HORIZONTAL)
 		}
 		fmt.Println()
+	}
+}
+
+func main() {
+	var game = Game{
+		score: 0,
+		grid: Grid{
+			size: Vec2{
+				x: SIZE,
+				y: SIZE,
+			},
+			buffer: [SIZE][SIZE]Pixel{},
+		},
+		snake: Snake{
+			body: []Vec2{
+				{
+					x: SIZE / 2,
+					y: SIZE / 2,
+				},
+			},
+			facing: LEFT,
+		},
+		apple: Vec2{
+			x: SIZE / 4,
+			y: SIZE / 4,
+		},
+	}
+	for {
+		game.update()
+		game.render()
+		var input int
+		fmt.Scan(&input)
+		game.snake.facing = Direction(input)
 	}
 }
