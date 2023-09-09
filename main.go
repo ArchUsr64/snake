@@ -9,9 +9,18 @@ type Vec2 struct {
 
 const SIZE = 32
 
+type Pixel int
+
+const (
+	EMPTY = iota
+	APPLE
+	SNAKE
+	HEAD
+)
+
 type Grid struct {
 	size   Vec2
-	buffer [SIZE][SIZE]int
+	buffer [SIZE][SIZE]Pixel
 }
 
 type Game struct {
@@ -27,7 +36,7 @@ func main() {
 				x: SIZE,
 				y: SIZE,
 			},
-			buffer: [SIZE][SIZE]int{},
+			buffer: [SIZE][SIZE]Pixel{},
 		},
 	}
 	game.render()
@@ -63,7 +72,22 @@ func (grid Grid) render() {
 			} else if j == 0 || j == 2*grid.size.x+1 {
 				fmt.Print(" ")
 			} else {
-				fmt.Print("@")
+				var x = (j - 1) / 2
+				var y int = i - 1
+				switch grid.buffer[y][x] {
+				case EMPTY:
+					fmt.Print(" ")
+					break
+				case APPLE:
+					fmt.Print("@")
+					break
+				case SNAKE:
+					fmt.Print("S")
+					break
+				case HEAD:
+					fmt.Print("^")
+					break
+				}
 			}
 		}
 		if i == 0 {
