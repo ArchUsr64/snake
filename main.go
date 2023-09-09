@@ -7,44 +7,60 @@ type Vec2 struct {
 	y int
 }
 
-type Game struct {
-	score     int
-	grid_size Vec2
+const SIZE = 32
+
+type Grid struct {
+	size   Vec2
+	buffer [SIZE][SIZE]int
 }
 
-const CURSOR_HOME = "\033[H"
-const TOP_LEFT = "╭"
-const TOP_RIGHT = "╮"
-const BOTTOM_LEFT = "╰"
-const BOTTOM_RIGHT = "╯"
-const HORIZONTAL = "│"
-const VERTICAL = "─"
+type Game struct {
+	score int
+	grid  Grid
+}
 
 func main() {
 	var game = Game{
 		score: 0,
-		grid_size: Vec2{
-			x: 32,
-			y: 32,
+		grid: Grid{
+			size: Vec2{
+				x: SIZE,
+				y: SIZE,
+			},
+			buffer: [SIZE][SIZE]int{},
 		},
 	}
 	game.render()
 }
 
 func (game Game) render() {
+	game.grid.render()
+}
+
+const (
+	CURSOR_HOME  = "\033[H"
+	TOP_LEFT     = "╭"
+	TOP_RIGHT    = "╮"
+	BOTTOM_LEFT  = "╰"
+	BOTTOM_RIGHT = "╯"
+	HORIZONTAL   = "│"
+	VERTICAL     = "─"
+)
+
+func (grid Grid) render() {
 	fmt.Print(CURSOR_HOME)
-	for i := 0; i < game.grid_size.y+2; i++ {
+	for i := 0; i < grid.size.y+2; i++ {
 		if i == 0 {
 			fmt.Print(TOP_LEFT)
-		} else if i == game.grid_size.y+1 {
+		} else if i == grid.size.y+1 {
 			fmt.Print(BOTTOM_LEFT)
 		} else {
 			fmt.Print(HORIZONTAL)
 		}
-		for j := 0; j < 2*game.grid_size.x+2; j++ {
-			if i == 0 || i == game.grid_size.y+1 {
+		for j := 0; j < 2*grid.size.x+2; j++ {
+			if i == 0 || i == grid.size.y+1 {
 				fmt.Print(VERTICAL)
-			} else if j == 0 || j == 2*game.grid_size.x+1 {
+			} else if j == 0 || j == 2*grid.size.x+1 {
 				fmt.Print(" ")
 			} else {
 				fmt.Print("@")
@@ -52,7 +68,7 @@ func (game Game) render() {
 		}
 		if i == 0 {
 			fmt.Print(TOP_RIGHT)
-		} else if i == game.grid_size.y+1 {
+		} else if i == grid.size.y+1 {
 			fmt.Print(BOTTOM_RIGHT)
 		} else {
 			fmt.Print(HORIZONTAL)
