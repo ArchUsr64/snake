@@ -140,6 +140,21 @@ func (grid Grid) render() {
 	}
 }
 
+func print_help() {
+	fmt.Print(`
+Symbols:
+	^ -> Head
+	@ -> Apple
+	S -> Snake Body
+
+Directions:
+	0 -> Left
+	1 -> Down
+	2 -> Up
+	3 -> Right
+Input:	`)
+}
+
 func main() {
 	var game = Game{
 		score: 0,
@@ -167,6 +182,7 @@ func main() {
 	for {
 		game.update()
 		game.render()
+		print_help()
 		var input int
 		fmt.Scan(&input)
 		game.snake.facing = Direction(input)
